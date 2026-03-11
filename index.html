@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>JobHunt</title>
+    </head>
+    <body>
+        <h1>JobHunt</h1>
+        <input id="company" placeholder="Company">
+        <input id="role" placeholder="Role">
+        <button id="addBtn">Add Job</button>
+        <ul id="jobs"></ul>
+   
+    <script>
+        async function loadJobs(){
+            const res = await fetch("http://localhost:3000/jobs")
+            const jobs = await res.json()
+            const list = document.getElementById("jobs")
+            list.innerHTML = ""
+            jobs.forEach(job => {
+                const li = document.createElement("li")
+                li.textContent = job.company + " - " + job.role
+                list.appendChild(li)
+            })
+        }
+
+        async function addJob() {
+            const company = document.getElementById("company").value
+            const role = document.getElementById("role").value
+            await fetch("http://localhost:3000/jobs",{
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({company, role})
+            })
+            loadJobs()
+        }
+        document.getElementById("addBtn").addEventListener("click", addJob)
+        loadJobs()
+    </script>
+    </body>
+    
+
+</html>
