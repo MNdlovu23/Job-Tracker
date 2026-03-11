@@ -42,12 +42,27 @@
                 padding: 0;
                 margin-top: 20px;
             }
+            select{
+                background: #2d6a4f;
+                color: wheat;
+                padding: 8px 16px;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+
+            }
         </style>
     </head>
     <body>
         <h1>Job-Hunt</h1>
         <input id="company" placeholder="Company">
         <input id="role" placeholder="Role">
+        <select id="status">
+            <option>Applied</option>
+            <option>Interview</option>
+            <option>Offer</option>
+            <option>Rejected</option>
+        </select>
         <button id="addBtn">Add Job</button>
         <ul id="jobs"></ul>
    
@@ -59,7 +74,7 @@
             list.innerHTML = ""
             jobs.forEach(job => {
                 const li = document.createElement("li")
-                li.textContent = job.company + " - " + job.role
+                li.textContent = job.company + " - " + job.role + " - " + job.status
                 list.appendChild(li)
             })
         }
@@ -67,10 +82,11 @@
         async function addJob() {
             const company = document.getElementById("company").value
             const role = document.getElementById("role").value
+            const status = document.getElementById("status").value
             await fetch("http://localhost:3000/jobs",{
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({company, role})
+                body: JSON.stringify({company, role, status})
             })
             loadJobs()
         }
