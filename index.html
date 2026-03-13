@@ -37,7 +37,22 @@
                 margin: 8px;
                 border-radius: 4px;
                 list-style: none;
+
             }
+            .applied {
+                    background: #4a90d9;
+                }
+                .interview {
+                    background: #e8a838;
+                }
+                .offer{
+                    background: #2d6a4f;
+                }
+                .rejected {
+                    background: #d94a4a;
+                }
+
+            
             ul{
                 padding: 0;
                 margin-top: 20px;
@@ -74,6 +89,7 @@
             list.innerHTML = ""
             jobs.forEach(job => {
                 const li = document.createElement("li")
+                li.className = job.status.toLowerCase()
                 li.textContent = job.company + " - " + job.role + " - " + job.status
                 const btn = document.createElement("button")
                 btn.textContent = "Delete"
