@@ -94,6 +94,11 @@
             const company = document.getElementById("company").value
             const role = document.getElementById("role").value
             const status = document.getElementById("status").value
+            if (!company || !role){
+                alert("Please fill in both Company and Role")
+                return 
+            }
+            
             await fetch("http://localhost:3000/jobs",{
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
