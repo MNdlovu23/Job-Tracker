@@ -75,8 +75,19 @@
             jobs.forEach(job => {
                 const li = document.createElement("li")
                 li.textContent = job.company + " - " + job.role + " - " + job.status
+                const btn = document.createElement("button")
+                btn.textContent = "Delete"
+                btn.addEventListener("click", ()=> deleteJob(job.id))
+                li.appendChild(btn)
                 list.appendChild(li)
             })
+        }
+
+        async function deleteJob(id) {
+            await fetch("http://localhost:3000/jobs/" + id,{
+                method: "DELETE"
+            })
+            loadJobs()
         }
 
         async function addJob() {
@@ -89,6 +100,9 @@
                 body: JSON.stringify({company, role, status})
             })
             loadJobs()
+
+
+
         }
         document.getElementById("addBtn").addEventListener("click", addJob)
         loadJobs()
