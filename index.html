@@ -104,6 +104,10 @@
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify({company, role, status})
             })
+
+             document.getElementById("company").value = ""
+             document.getElementById("role").value = ""
+             document.getElementById("status").value = "Applied"
             loadJobs()
 
 
