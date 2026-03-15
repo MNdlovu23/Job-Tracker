@@ -17,7 +17,7 @@
             }
             button {
                 background: #2d6a4f;
-                color: wheat;
+                color: rgb(255, 255, 255);
                 padding: 8px 16px;
                 border: none;
                 border-radius: 4px;
@@ -31,27 +31,18 @@
                 font-size: 1rem;
             }
             li{
-                background: #2d6a4f;
-                color: wheat;
+                background: #f5f5f5;
+                color: #333;
                 padding: 20px;
                 margin: 8px;
                 border-radius: 4px;
                 list-style: none;
+                display: flex;
+                justify-content: space-between;
+                align-items:border-left;
 
             }
-            .applied {
-                    background: #4a90d9;
-                }
-                .interview {
-                    background: #e8a838;
-                }
-                .offer{
-                    background: #2d6a4f;
-                }
-                .rejected {
-                    background: #d94a4a;
-                }
-
+        
             
             ul{
                 padding: 0;
@@ -59,7 +50,7 @@
             }
             select{
                 background: #2d6a4f;
-                color: wheat;
+                color: rgb(254, 254, 254);
                 padding: 8px 16px;
                 border: none;
                 border-radius: 4px;
@@ -80,7 +71,8 @@
         </select>
         <button id="addBtn">Add Job</button>
         <ul id="jobs"></ul>
-   
+
+         
     <script>
         async function loadJobs(){
             const res = await fetch("http://localhost:3000/jobs")
@@ -90,10 +82,29 @@
             jobs.forEach(job => {
                 const li = document.createElement("li")
                 li.className = job.status.toLowerCase()
-                li.textContent = job.company + " - " + job.role + " - " + job.status
+                const dot = document.createElement("span")
+                dot.textContent = " ● "
+                const colours = {
+                    applied: "#4a90d9",
+                    interview: "#e8a838",
+                    offer: "#2d6a4f",
+                    rejected: "#d94a4a"
+                }
+                dot.style.color = colours[job.status.toLowerCase()]
+                const text = document.createElement("span")
+                text.textContent = job.company + " - " + job.role + " - " + job.status
+                
                 const btn = document.createElement("button")
                 btn.textContent = "Delete"
                 btn.addEventListener("click", ()=> deleteJob(job.id))
+                const left = document.createElement("div")
+                left.style.display = "flex"
+                left.style.alignItems = "center"
+                left.style.gap = "8px"
+                left.appendChild(dot)
+                left.appendChild(text)
+
+                li.appendChild(left)
                 li.appendChild(btn)
                 list.appendChild(li)
             })
