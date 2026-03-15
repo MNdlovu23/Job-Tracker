@@ -39,7 +39,7 @@
                 list-style: none;
                 display: flex;
                 justify-content: space-between;
-                align-items:border-left;
+                align-items:center;
 
             }
         
@@ -72,6 +72,24 @@
         <button id="addBtn">Add Job</button>
         <ul id="jobs"></ul>
 
+        <div id="modal" style ="display:none">
+            <div id = "modal-box">
+                <h2>Edit Job</h2>
+                <input id="edit-company" placeholder="Company">
+                  <input id="edit-role" placeholder="Role">
+        <select id="edit-status">
+            <option>Applied</option>
+            <option>Interview</option>
+            <option>Offer</option>
+            <option>Rejected</option>
+        </select>
+        <button id="saveBtn">Save</button>
+        <button id="cancelBtn">Cancel</button>
+    
+
+            </div>
+        </div>
+
          
     <script>
         async function loadJobs(){
@@ -97,15 +115,24 @@
                 const btn = document.createElement("button")
                 btn.textContent = "Delete"
                 btn.addEventListener("click", ()=> deleteJob(job.id))
+                const editBtn = document.createElement("button")
+editBtn.textContent = "Edit"
+editBtn.addEventListener("click", () => openEdit(job))
+
+                
                 const left = document.createElement("div")
                 left.style.display = "flex"
                 left.style.alignItems = "center"
                 left.style.gap = "8px"
                 left.appendChild(dot)
                 left.appendChild(text)
-
+                const buttons = document.createElement("div")
+                buttons.style.display = "flex"
+                buttons.style.gap = "8px"
+                buttons.appendChild(editBtn)
+                buttons.appendChild(btn)
                 li.appendChild(left)
-                li.appendChild(btn)
+                li.appendChild(buttons)
                 list.appendChild(li)
             })
         }
@@ -115,6 +142,14 @@
                 method: "DELETE"
             })
             loadJobs()
+        }
+
+        function openEdit(job){
+            document.getElementById("modal").dataset.id = job.id
+            document.getElementById("edit-company").value = job.company
+            document.getElementById("edit-role").value = job.role
+            document.getElementById("edit-status").value = job.status
+            document.getElementById("modal").style.display = "block"
         }
 
         async function addJob() {
@@ -141,6 +176,23 @@
 
         }
         document.getElementById("addBtn").addEventListener("click", addJob)
+        document.getElementById("cancelBtn").addEventListener("click", () => {
+        document.getElementById("modal").style.display = "none"
+})
+document.getElementById("saveBtn").addEventListener("click", async () => {
+    const id = document.getElementById("modal").dataset.id
+    const company = document.getElementById("edit-company").value
+    const role = document.getElementById("edit-role").value
+    const status = document.getElementById("edit-status").value
+    await fetch("http://localhost:3000/jobs/" + id, {
+        method: "PUT",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({company, role, status})
+    })
+    document.getElementById("modal").style.display = "none"
+    loadJobs()
+})
+        
         loadJobs()
     </script>
     </body>

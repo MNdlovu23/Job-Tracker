@@ -44,7 +44,13 @@ app.delete("/jobs/:id", (req, res) => {
 
 })
 
-
+app.put("/jobs/:id", (req, res) => {
+    const index = jobs.findIndex(job => job.id === req.params.id)
+    if (index === -1) return res.status(404).json({ error: "Job not found" })
+    jobs[index] = { ...jobs[index], ...req.body }
+    saveJobs()
+    res.json(jobs[index])
+})
 
 app.listen(3000, () => {
     console.log("Server running on port 3000")
