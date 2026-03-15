@@ -31,6 +31,7 @@ app.get("/jobs", (req, res) => {
 app.post("/jobs", (req, res) => {
     const job = req.body
     job.id = Date.now().toString()
+    job.date = new Date().toLocaleDateString()
     jobs.push(job)
     saveJobs()
     res.json(job)
