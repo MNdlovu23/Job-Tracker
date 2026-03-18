@@ -1,221 +1,554 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <title>Road2Hired</title>
-        <style>
-            body {
-                background: #ffffff;
-                font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-                padding: 20px;
-                max-width: 800px;
-                margin: 0 auto;
-            }
-            h1 {
-                color: #2d6a4f;
-                font-size: 2rem;
-                font-family:system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-            }
-            button {
-                background: #2d6a4f;
-                color: rgb(255, 255, 255);
-                padding: 8px 16px;
-                border: none;
-                border-radius: 4px;
-                cursor: pointer;
-            }
-            input{
-                padding: 8px 12px;
-                border: 1px solid #ccc;
-                border-radius: 4px;
-                margin-right: 8px;
-                font-size: 1rem;
-            }
-            li{
-                background: #f5f5f5;
-                color: #333;
-                padding: 20px;
-                margin: 8px;
-                border-radius: 4px;
-                list-style: none;
-                display: flex;
-                justify-content: space-between;
-                align-items:center;
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Road2Hired</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-            }
-        
-            
-            ul{
-                padding: 0;
-                margin-top: 20px;
-            }
-            select{
-                background: #2d6a4f;
-                color: rgb(254, 254, 254);
-                padding: 8px 16px;
-                border: none;
-                border-radius: 4px;
-                cursor: pointer;
+        :root {
+    --bg: #f4f9f4;
+    --surface: #ffffff;
+    --border: #d4e8d4;
+    --accent: #2d6a4f;
+    --accent-light: #e8f5e8;
+    --text: #1a1a1a;
+    --muted: #6b8f71;
+    --applied: #3b7dd8;
+    --interview: #d4952a;
+    --offer: #2a9d5c;
+    --rejected: #c94040;
+    --radius: 12px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+    --shadow-hover: 0 4px 12px rgba(0,0,0,0.1), 0 8px 32px rgba(0,0,0,0.06);
+}
 
-            }
-        </style>
-    </head>
-    <body>
-        <h1>Road2Hired</h1>
-        <input id="company" placeholder="Company">
-        <input id="role" placeholder="Role">
-        <select id="status">
-            <option>Applied</option>
-            <option>Interview</option>
-            <option>Offer</option>
-            <option>Rejected</option>
-        </select>
-        <button id="addBtn">Add Job</button>
-        <div id="filters">
-    <button onclick="filterJobs('All')">All</button>
-    <button onclick="filterJobs('Applied')">Applied</button>
-    <button onclick="filterJobs('Interview')">Interview</button>
-    <button onclick="filterJobs('Offer')">Offer</button>
-    <button onclick="filterJobs('Rejected')">Rejected</button>
-</div>
-        <ul id="jobs"></ul>
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
 
-        <div id="modal" style ="display:none">
-            <div id = "modal-box">
-                <h2>Edit Job</h2>
-                <input id="edit-company" placeholder="Company">
-                  <input id="edit-role" placeholder="Role">
-        <select id="edit-status">
-            <option>Applied</option>
-            <option>Interview</option>
-            <option>Offer</option>
-            <option>Rejected</option>
-        </select>
-        <button id="saveBtn">Save</button>
-        <button id="cancelBtn">Cancel</button>
-    
+        header {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 0 2.5rem;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
 
+        .logo {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.5rem;
+            color: var(--text);
+            letter-spacing: -0.5px;
+        }
+
+        .logo span { color: var(--accent); }
+
+        .header-stats { display: flex; gap: 2rem; }
+
+        .stat { text-align: center; }
+
+        .stat-num {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text);
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 0.68rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-top: 2px;
+        }
+
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2.5rem 2rem;
+        }
+
+        .form-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        .form-label {
+            font-size: 0.72rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--muted);
+            margin-bottom: 0.75rem;
+            display: block;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto auto;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        input, select {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.9rem;
+            padding: 0.65rem 1rem;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg);
+            color: var(--text);
+            outline: none;
+            transition: border-color 0.15s, box-shadow 0.15s;
+            width: 100%;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(193,127,62,0.12);
+            background: var(--surface);
+        }
+
+        input::placeholder { color: var(--muted); }
+
+        select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%238a8580' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            padding-right: 2.5rem;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0.65rem 1.4rem;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: opacity 0.15s, transform 0.15s;
+        }
+
+        .btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+        .btn-primary:active { transform: translateY(0); }
+
+        .filters-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.25rem;
+        }
+
+        .section-title {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.25rem;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 0.25rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 3px;
+        }
+
+        .filter-tab {
+            background: transparent;
+            border: none;
+            border-radius: 6px;
+            padding: 0.4rem 0.9rem;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.78rem;
+            font-weight: 500;
+            color: var(--muted);
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .filter-tab:hover { color: var(--text); }
+        .filter-tab.active { background: var(--accent); color: white; }
+
+        .job-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.1rem 1.25rem;
+            margin-bottom: 0.6rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: var(--shadow);
+            transition: box-shadow 0.2s, transform 0.15s;
+            animation: slideIn 0.25s ease both;
+        }
+
+        .job-card:hover { box-shadow: var(--shadow-hover); transform: translateY(-1px); }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .card-left { display: flex; align-items: center; gap: 1rem; }
+
+        .status-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+        .card-company { font-weight: 600; font-size: 0.95rem; line-height: 1.2; }
+
+        .card-meta { font-size: 0.78rem; color: var(--muted); margin-top: 2px; }
+
+        .card-right { display: flex; align-items: center; gap: 1rem; }
+
+        .status-badge {
+            font-size: 0.72rem;
+            font-weight: 600;
+            padding: 0.25rem 0.7rem;
+            border-radius: 20px;
+            letter-spacing: 0.3px;
+        }
+
+        .badge-applied   { background: #e8f0fb; color: var(--applied); }
+        .badge-interview { background: #fdf3e0; color: var(--interview); }
+        .badge-offer     { background: #e6f7ee; color: var(--offer); }
+        .badge-rejected  { background: #fdeaea; color: var(--rejected); }
+
+        .card-date { font-size: 0.72rem; color: var(--muted); white-space: nowrap; }
+
+        .card-actions { display: flex; gap: 0.4rem; opacity: 0; transition: opacity 0.15s; }
+        .job-card:hover .card-actions { opacity: 1; }
+
+        .btn-icon {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--muted);
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            transition: all 0.15s;
+        }
+
+        .btn-icon:hover { color: var(--text); border-color: var(--accent); background: var(--accent-light); }
+        .btn-icon.danger:hover { color: var(--rejected); border-color: var(--rejected); background: #fdeaea; }
+
+        .empty-state { text-align: center; padding: 4rem 2rem; color: var(--muted); }
+        .empty-icon { font-size: 2.5rem; margin-bottom: 1rem; opacity: 0.3; }
+        .empty-text { font-size: 0.9rem; }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(4px);
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+        }
+
+        .modal-overlay.open { opacity: 1; pointer-events: all; }
+
+        .modal {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 2rem;
+            width: 100%;
+            max-width: 440px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            transform: translateY(12px) scale(0.98);
+            transition: transform 0.2s;
+        }
+
+        .modal-overlay.open .modal { transform: translateY(0) scale(1); }
+
+        .modal-title {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-field { margin-bottom: 1rem; }
+
+        .modal-field label {
+            display: block;
+            font-size: 0.72rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--muted);
+            margin-bottom: 0.4rem;
+        }
+
+        .modal-actions { display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.5rem; }
+
+        .btn-ghost {
+            background: transparent;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            color: var(--muted);
+            padding: 0.6rem 1.2rem;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.88rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .btn-ghost:hover { border-color: var(--text); color: var(--text); }
+
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--text);
+            color: white;
+            border-radius: 8px;
+            padding: 0.75rem 1.25rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            z-index: 300;
+            transform: translateY(80px);
+            opacity: 0;
+            transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s;
+        }
+
+        .toast.show { transform: translateY(0); opacity: 1; }
+
+        @media (max-width: 640px) {
+            .form-row { grid-template-columns: 1fr 1fr; }
+            .btn-primary { grid-column: span 2; }
+            .header-stats { display: none; }
+            .card-date { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">Road<span>2</span>Hired</div>
+        <div class="header-stats">
+            <div class="stat"><div class="stat-num" id="stat-total">0</div><div class="stat-label">Total</div></div>
+            <div class="stat"><div class="stat-num" id="stat-interviews">0</div><div class="stat-label">Interviews</div></div>
+            <div class="stat"><div class="stat-num" id="stat-offers">0</div><div class="stat-label">Offers</div></div>
+        </div>
+    </header>
+
+    <main>
+        <div class="form-card">
+            <span class="form-label">Add New Application</span>
+            <div class="form-row">
+                <input id="company" placeholder="Company name" />
+                <input id="role" placeholder="Job title" />
+                <select id="status">
+                    <option value="Applied">Applied</option>
+                    <option value="Interview">Interview</option>
+                    <option value="Offer">Offer</option>
+                    <option value="Rejected">Rejected</option>
+                </select>
+                <button class="btn-primary" id="addBtn">+ Add</button>
             </div>
         </div>
 
-         
+        <div class="filters-row">
+            <div class="section-title">Applications</div>
+            <div class="filter-tabs">
+                <button class="filter-tab active" onclick="filterJobs('All', this)">All</button>
+                <button class="filter-tab" onclick="filterJobs('Applied', this)">Applied</button>
+                <button class="filter-tab" onclick="filterJobs('Interview', this)">Interview</button>
+                <button class="filter-tab" onclick="filterJobs('Offer', this)">Offer</button>
+                <button class="filter-tab" onclick="filterJobs('Rejected', this)">Rejected</button>
+            </div>
+        </div>
+
+        <div id="jobs"></div>
+    </main>
+
+    <div class="modal-overlay" id="modal">
+        <div class="modal">
+            <div class="modal-title">Edit Application</div>
+            <div class="modal-field">
+                <label>Company</label>
+                <input id="edit-company" placeholder="Company name" />
+            </div>
+            <div class="modal-field">
+                <label>Role</label>
+                <input id="edit-role" placeholder="Job title" />
+            </div>
+            <div class="modal-field">
+                <label>Status</label>
+                <select id="edit-status">
+                    <option value="Applied">Applied</option>
+                    <option value="Interview">Interview</option>
+                    <option value="Offer">Offer</option>
+                    <option value="Rejected">Rejected</option>
+                </select>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-ghost" id="cancelBtn">Cancel</button>
+                <button class="btn-primary" id="saveBtn">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
     <script>
-        function renderJobs(jobs){
-            const list = document.getElementById("jobs")
-            list.innerHTML = ""
+        const API = "http://localhost:3000"
+
+        function showToast(msg) {
+            const t = document.getElementById("toast")
+            t.textContent = msg
+            t.classList.add("show")
+            setTimeout(() => t.classList.remove("show"), 2500)
+        }
+
+        function updateStats(jobs) {
+            document.getElementById("stat-total").textContent = jobs.length
+            document.getElementById("stat-interviews").textContent = jobs.filter(j => j.status === "Interview").length
+            document.getElementById("stat-offers").textContent = jobs.filter(j => j.status === "Offer").length
+        }
+
+        function escHtml(str) {
+            return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+        }
+
+        function renderJobs(jobs) {
+            const container = document.getElementById("jobs")
+            container.innerHTML = ""
+            if (!jobs.length) {
+                container.innerHTML = `<div class="empty-state"><div class="empty-icon">○</div><div class="empty-text">No applications yet — add your first one above</div></div>`
+                return
+            }
+            const dotColours = { applied: "#3b7dd8", interview: "#d4952a", offer: "#2a9d5c", rejected: "#c94040" }
+            const badgeClass = { Applied: "badge-applied", Interview: "badge-interview", Offer: "badge-offer", Rejected: "badge-rejected" }
             jobs.forEach(job => {
-                const li = document.createElement("li")
-                li.className = job.status.toLowerCase()
-                const dot = document.createElement("span")
-                dot.textContent = " ● "
-                const colours = {
-                    applied: "#4a90d9",
-                    interview: "#e8a838",
-                    offer: "#2d6a4f",
-                    rejected: "#d94a4a"
-                }
-                dot.style.color = colours[job.status.toLowerCase()]
-                const text = document.createElement("span")
-                text.textContent = job.company + " - " + job.role + " - " + job.status + " - " + job.date
-                
-                const btn = document.createElement("button")
-                btn.textContent = "Delete"
-                btn.addEventListener("click", ()=> deleteJob(job.id))
-                const editBtn = document.createElement("button")
-editBtn.textContent = "Edit"
-editBtn.addEventListener("click", () => openEdit(job))
-
-                
-                const left = document.createElement("div")
-                left.style.display = "flex"
-                left.style.alignItems = "center"
-                left.style.gap = "8px"
-                left.appendChild(dot)
-                left.appendChild(text)
-                const buttons = document.createElement("div")
-                buttons.style.display = "flex"
-                buttons.style.gap = "8px"
-                buttons.appendChild(editBtn)
-                buttons.appendChild(btn)
-                li.appendChild(left)
-                li.appendChild(buttons)
-                list.appendChild(li)
+                const card = document.createElement("div")
+                card.className = "job-card"
+                const jobJson = encodeURIComponent(JSON.stringify(job))
+                card.innerHTML = `
+                    <div class="card-left">
+                        <div class="status-dot" style="background:${dotColours[job.status.toLowerCase()]}"></div>
+                        <div class="card-info">
+                            <div class="card-company">${escHtml(job.company)}</div>
+                            <div class="card-meta">${escHtml(job.role)}</div>
+                        </div>
+                    </div>
+                    <div class="card-right">
+                        <span class="status-badge ${badgeClass[job.status]}">${job.status}</span>
+                        <span class="card-date">${job.date || ""}</span>
+                        <div class="card-actions">
+                            <button class="btn-icon" title="Edit" data-job="${jobJson}">✎</button>
+                            <button class="btn-icon danger" title="Delete" data-id="${job.id}">✕</button>
+                        </div>
+                    </div>`
+                card.querySelector(".btn-icon[title='Edit']").addEventListener("click", () => openEdit(job))
+                card.querySelector(".btn-icon[title='Delete']").addEventListener("click", () => deleteJob(job.id))
+                container.appendChild(card)
             })
+            updateStats(jobs)
         }
 
-        async function loadJobs(){
-          const res = await fetch("http://localhost:3000/jobs")
-          const jobs = await res.json()
-          renderJobs(jobs)
+        async function loadJobs() {
+            const res = await fetch(`${API}/jobs`)
+            const jobs = await res.json()
+            renderJobs(jobs)
         }
 
+        async function filterJobs(status, btn) {
+            document.querySelectorAll(".filter-tab").forEach(b => b.classList.remove("active"))
+            if (btn) btn.classList.add("active")
+            const res = await fetch(`${API}/jobs`)
+            const jobs = await res.json()
+            const filtered = status === "All" ? jobs : jobs.filter(j => j.status === status)
+            renderJobs(filtered)
+        }
 
-        async function filterJobs(status) {
-    const res = await fetch("http://localhost:3000/jobs")
-    const jobs = await res.json()
-    const filtered = status === "All" ? jobs : jobs.filter(job => job.status === status)
-    renderJobs(filtered)
-    }
-
+        document.getElementById("addBtn").addEventListener("click", async () => {
+            const company = document.getElementById("company").value.trim()
+            const role = document.getElementById("role").value.trim()
+            const status = document.getElementById("status").value
+            if (!company || !role) { showToast("Please fill in company and role"); return }
+            await fetch(`${API}/jobs`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ company, role, status })
+            })
+            document.getElementById("company").value = ""
+            document.getElementById("role").value = ""
+            document.getElementById("status").value = "Applied"
+            showToast(`Added ${company} ✓`)
+            loadJobs()
+        })
 
         async function deleteJob(id) {
-            await fetch("http://localhost:3000/jobs/" + id,{
-                method: "DELETE"
-            })
+            await fetch(`${API}/jobs/${id}`, { method: "DELETE" })
+            showToast("Application removed")
             loadJobs()
         }
 
-        function openEdit(job){
+        function openEdit(job) {
             document.getElementById("modal").dataset.id = job.id
             document.getElementById("edit-company").value = job.company
             document.getElementById("edit-role").value = job.role
             document.getElementById("edit-status").value = job.status
-            document.getElementById("modal").style.display = "block"
+            document.getElementById("modal").classList.add("open")
         }
 
-        async function addJob() {
-            const company = document.getElementById("company").value
-            const role = document.getElementById("role").value
-            const status = document.getElementById("status").value
-            if (!company || !role){
-                alert("Please fill in both Company and Role")
-                return 
-            }
-            
-            await fetch("http://localhost:3000/jobs",{
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({company, role, status})
-            })
-
-             document.getElementById("company").value = ""
-             document.getElementById("role").value = ""
-             document.getElementById("status").value = "Applied"
-            loadJobs()
-
-
-
-        }
-        document.getElementById("addBtn").addEventListener("click", addJob)
         document.getElementById("cancelBtn").addEventListener("click", () => {
-        document.getElementById("modal").style.display = "none"
-})
-document.getElementById("saveBtn").addEventListener("click", async () => {
-    const id = document.getElementById("modal").dataset.id
-    const company = document.getElementById("edit-company").value
-    const role = document.getElementById("edit-role").value
-    const status = document.getElementById("edit-status").value
-    await fetch("http://localhost:3000/jobs/" + id, {
-        method: "PUT",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({company, role, status})
-    })
-    document.getElementById("modal").style.display = "none"
-    loadJobs()
-})
-        
+            document.getElementById("modal").classList.remove("open")
+        })
+
+        document.getElementById("modal").addEventListener("click", (e) => {
+            if (e.target === document.getElementById("modal")) {
+                document.getElementById("modal").classList.remove("open")
+            }
+        })
+
+        document.getElementById("saveBtn").addEventListener("click", async () => {
+            const id = document.getElementById("modal").dataset.id
+            const company = document.getElementById("edit-company").value.trim()
+            const role = document.getElementById("edit-role").value.trim()
+            const status = document.getElementById("edit-status").value
+            await fetch(`${API}/jobs/${id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ company, role, status })
+            })
+            document.getElementById("modal").classList.remove("open")
+            showToast("Changes saved ✓")
+            loadJobs()
+        })
+
         loadJobs()
     </script>
-    </body>
-    
-
+</body>
 </html>
