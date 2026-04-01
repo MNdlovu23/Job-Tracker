@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang ="en" >
+    <head>
+        <meta charset = "UTF-8">
+        <title>Road2Hired - Login </title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg: #f4f9f4;
+            --surface: #ffffff;
+            --border: #d4e8d4;
+            --accent: #2d6a4f;
+            --accent-light: #e8f5e8;
+            --text: #1a1a1a;
+            --muted: #6b8f71;
+            --radius: 12px;
+            --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: var(--shadow);
+        }
+
+        .logo {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.8rem;
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .logo span { color: var(--accent); }
+
+        .tagline {
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--muted);
+            margin-bottom: 2rem;
+        }
+
+        .field {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            font-size: 0.72rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--muted);
+            margin-bottom: 0.4rem;
+        }
+
+        input {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.9rem;
+            padding: 0.65rem 1rem;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg);
+            color: var(--text);
+            outline: none;
+            transition: border-color 0.15s, box-shadow 0.15s;
+            width: 100%;
+        }
+
+        input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(45,106,79,0.12);
+            background: var(--surface);
+        }
+
+        input::placeholder { color: var(--muted); }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0.75rem;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: opacity 0.15s, transform 0.15s;
+            margin-top: 0.5rem;
+        }
+
+        .btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+
+        .btn-ghost {
+            background: transparent;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            padding: 0.75rem;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--muted);
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.15s;
+            margin-top: 0.5rem;
+        }
+
+        .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+        .error {
+            color: #c94040;
+            font-size: 0.8rem;
+            margin-top: 1rem;
+            text-align: center;
+            min-height: 1.2rem;
+        }
+
+        .divider {
+            text-align: center;
+            font-size: 0.78rem;
+            color: var(--muted);
+            margin: 1rem 0;
+        }
+    </style>
+    </head>
+    <body>
+    <div class="login-card">
+        <div class="logo">Road<span>2</span>Hired</div>
+        <div class="tagline">Track your journey to getting hired</div>
+
+        <div class="field">
+            <label>Email</label>
+            <input id="email" type="email" placeholder="you@example.com" />
+        </div>
+        <div class="field">
+            <label>Password</label>
+            <input id="password" type="password" placeholder="••••••••" />
+        </div>
+
+        <button class="btn-primary" id="loginBtn">Log In</button>
+        <div class="divider">or</div>
+        <button class="btn-ghost" id="signupBtn">Create Account</button>
+
+        <p class="error" id="error"></p>
+    </div>
+    
+    
+        <script type="module">
+            import { auth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "./firebase.js"
+
+            document.getElementById("loginBtn").addEventListener("click", async()=> {
+                const email = document.getElementById("email").value 
+                const password = document.getElementById("password").value
+                try {
+                    await signInWithEmailAndPassword(auth, email, password)
+                    window.location.href = "index.html"
+                } catch (err) {
+                    document.getElementById("error").textContent = err.message
+
+                }
+                })
+            document.getElementById("signupBtn").addEventListener("click", async ()=> {
+                    const email = document.getElementById("email").value
+        const password = document.getElementById("password").value
+        try {
+            await createUserWithEmailAndPassword(auth, email, password)
+            window.location.href = "index.html"
+        } catch (err) {
+            document.getElementById("error").textContent = err.message
+        }
+            } )
+    </script>
+    </body>
+</html>
