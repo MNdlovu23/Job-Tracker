@@ -7,7 +7,7 @@ const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 const supabase = createClient(supabaseUrl, supabaseKey)
 const app = express()
 app.use(cors())
-= require("fs")
+
 app.use(express.json())
 
 
@@ -17,9 +17,11 @@ app.get("/ping", (req, res) => {
 })
 
 app.get("/jobs", async (req, res) => {
+    const userId = req.query.userId
     const { data, error} = await supabase
     .from("Jobs")
     .select("*")
+    .eq("user_id", userId)
     if(error) return res.status(500).json({error: error.message})
     res.json(data)
 })
@@ -31,6 +33,7 @@ app.post("/jobs", async (req, res) => {
     }
     const job = {
         id: Date.now().toString(),
+        user_id: req.body.userId,
         company,
         role,
         status: status || "Applied",
@@ -40,8 +43,6 @@ app.post("/jobs", async (req, res) => {
     .from("Jobs")
     .insert([job])
     .select()
-    console.log("Supabase error:", error)  
-console.log("Supabase data:", data) 
     if (error) return res.status (500).json({ error:error.message})
         res.status(201).json(data[0])
 })

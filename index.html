@@ -352,16 +352,6 @@
     </style>
 </head>
 <body>
-<script type="module">
-    import {auth, onAuthStateChanged } from "./firebase.js"
-
-    onAuthStateChanged(auth, (user) =>{
-        if (!user) {
-            window.location.href = "login.html"
-        
-        }
-    })
-</script>
     <header>
         <div class="logo">Road<span>2</span>Hired</div>
         <div class="header-stats">
@@ -488,7 +478,7 @@
         }
 
         async function loadJobs() {
-            const res = await fetch(`${API}/jobs`)
+            const res = await fetch(`${API}/jobs?userId=${window.currentUserId}`)
             const jobs = await res.json()
             renderJobs(jobs)
         }
@@ -496,7 +486,7 @@
         async function filterJobs(status, btn) {
             document.querySelectorAll(".filter-tab").forEach(b => b.classList.remove("active"))
             if (btn) btn.classList.add("active")
-            const res = await fetch(`${API}/jobs`)
+            const res = await fetch(`${API}/jobs?userId=${window.currentUserId}`)
             const jobs = await res.json()
             const filtered = status === "All" ? jobs : jobs.filter(j => j.status === status)
             renderJobs(filtered)
@@ -510,7 +500,7 @@
             await fetch(`${API}/jobs`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ company, role, status })
+                body: JSON.stringify({ company, role, status, userId: window.currentUserId })
             })
             document.getElementById("company").value = ""
             document.getElementById("role").value = ""
@@ -558,7 +548,24 @@
             loadJobs()
         })
 
-        loadJobs()
+    </script>
+    <script type="module">
+    import {auth, onAuthStateChanged, signOut } from "./firebase.js"
+
+    onAuthStateChanged(auth, (user) =>{
+        if (!user) {
+            window.location.href = "login.html"
+        } else {
+            window.currentUserId = user.uid
+            loadJobs()
+        }
+        
+        
+    })
+    document.getElementById("logoutBtn").addEventListener("click", async () => {
+        await signOut(auth)
+        window.location.href = "login.html"
+    })
     </script>
 </body>
 </html>
