@@ -1,11 +1,5 @@
 {
-    "version": 2,
-    "builds": [
-        { "src": "*.html", "use": "@vercel/static" },
-        { "src": "*.js", "use": "@vercel/static"}
-    ],
-    "routes": [
-        {"source": "/", "dest": "/login.html"},
-        { "source": "/(.*)", "dest": "/$1" }
+    "rewrites": [
+        { "source": "/", "destination": "/login.html" }
     ]
 }
