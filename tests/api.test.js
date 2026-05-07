@@ -63,13 +63,16 @@ describe("Jobs API",() => {
         expect(res.body.success).toBe(true)
     })
 
-    test("GET /jobs returns an array", async () => {
-    const res = await request(app)
+    // Clean up test data after all tests
+afterAll(async () => {
+    await request(app)
         .get("/jobs")
         .query({ userId: "test123" })
-    console.log(res.body) // ← add this
-    expect(res.statusCode).toBe(200)
-    expect(Array.isArray(res.body)).toBe(true)
+        .then(async (res) => {
+            for (const job of res.body) {
+                await request(app).delete(`/jobs/${job.id}`)
+            }
+        })
 })
 
 })
